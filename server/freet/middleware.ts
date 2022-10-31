@@ -42,6 +42,38 @@ const isValidFreetContent = (req: Request, res: Response, next: NextFunction) =>
 };
 
 /**
+ * Checks if the anonymity setting of the freet in req.body is valid, i.e empty space or a boolean "true"/"false"
+ */
+ const isValidFreetSetting = (req: Request, res: Response, next: NextFunction) => {
+  const {isAnon} = req.body as {isAnon: string};
+
+  if (isAnon !== "true" && isAnon !== "false" && isAnon.trim()) {
+    res.status(412).json({
+      error: 'Anonymity setting must be a boolean value true or false.'
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Checks if the anonymity setting of the freet in req.query is valid, i.e empty space or a boolean "true"/"false"
+ */
+ const isValidFreetSettingQuery = (req: Request, res: Response, next: NextFunction) => {
+  const {isAnon} = req.query as {isAnon: string};
+
+  if (isAnon !== "true" && isAnon !== "false" && isAnon.trim()) {
+    res.status(412).json({
+      error: 'Anonymity setting must be a boolean value true or false.'
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
  * Checks if the current user is the author of the freet whose freetId is in req.params
  */
 const isValidFreetModifier = async (req: Request, res: Response, next: NextFunction) => {
@@ -59,6 +91,8 @@ const isValidFreetModifier = async (req: Request, res: Response, next: NextFunct
 
 export {
   isValidFreetContent,
+  isValidFreetSetting,
   isFreetExists,
-  isValidFreetModifier
+  isValidFreetModifier,
+  isValidFreetSettingQuery,
 };

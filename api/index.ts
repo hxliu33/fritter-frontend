@@ -9,6 +9,9 @@ import dotenv from 'dotenv';
 import * as userValidator from '../server/user/middleware';
 import {userRouter} from '../server/user/router';
 import {freetRouter} from '../server/freet/router';
+import {fontSwitchRouter} from '../server/fontswitch/router';
+import {groupRouter} from '../server/group/router';
+import {pauseRouter} from '../server/pause/router';
 import MongoStore from 'connect-mongo';
 
 // Load environmental variables
@@ -50,18 +53,18 @@ app.use(express.json());
 // Parse incoming requests with urlencoded payloads ('content-type: application/x-www-form-urlencoded' in header)
 app.use(express.urlencoded({extended: false}));
 
-// Initialize cookie session
 // https://www.npmjs.com/package/express-session#options
+// Initialize cookie session
 app.use(session({
   secret: '61040', // Should generate a real secret
   resave: true,
   saveUninitialized: false,
-  store: MongoStore.create({
-    clientPromise: client,
-    dbName: 'sessions',
-    autoRemove: 'interval',
-    autoRemoveInterval: 10 // Minutes
-  })
+   store: MongoStore.create({
+     clientPromise: client,
+     dbName: 'sessions',
+     autoRemove: 'interval',
+     autoRemoveInterval: 10 // Minutes
+   })
 }));
 
 // This makes sure that if a user is logged in, they still exist in the database
@@ -70,6 +73,9 @@ app.use(userValidator.isCurrentSessionUserExists);
 // Add routers from routes folder
 app.use('/api/users', userRouter);
 app.use('/api/freets', freetRouter);
+app.use('/api/font', fontSwitchRouter);
+app.use('/api/groups', groupRouter);
+app.use('/api/pause', pauseRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {

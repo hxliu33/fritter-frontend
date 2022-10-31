@@ -28,7 +28,7 @@ router.get(
   }
 );
 
-/**
+  /**
  * Sign in user.
  *
  * @name POST /api/users/session
