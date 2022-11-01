@@ -6,8 +6,13 @@
     class="freet"
   >
     <header>
-      <h3 class="author">
+      <h3 class="author"
+        v-if="freet.isAnonymous === false">
         @{{ freet.author }}
+      </h3>
+      <h3 class="author"
+        v-else>
+        @Anonymous
       </h3>
       <div
         v-if="$store.state.username === freet.author"
