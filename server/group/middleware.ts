@@ -259,6 +259,23 @@ const isUserExists = async (req: Request, res: Response, next: NextFunction) => 
   next();
 };
 
+/**
+ * Checks if a freet with freetId in req.body is not in the group
+ */
+ const isFreetNotInGroup = async (req: Request, res: Response, next: NextFunction) => {
+  const {groupId} = req.params as {groupId: string};
+  const group = await GroupCollection.findOneByGroupId(groupId);
+
+  if (!group.posts.includes(req.body.freetId as Types.ObjectId)) {
+    res.status(409).json({
+      error: `Freet with freet ID ${req.body.freetId} doesn't exist in group.`
+    });
+    return;
+  }
+
+  next();
+};
+
 export {
   isNameNotAlreadyInUse,
   isGroupExists,
@@ -273,4 +290,5 @@ export {
   isUserExists,
   isFreetExists,
   isFreetInGroup,
+  isFreetNotInGroup,
 };

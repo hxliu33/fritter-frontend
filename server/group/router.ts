@@ -106,7 +106,7 @@ router.post(
 );
 
 /**
- * Delete a group
+ * Delete a group and all freets within it
  *
  * @name DELETE /api/groups/:id
  *
@@ -123,9 +123,11 @@ router.post(
     groupValidator.isUserAdmin,
   ],
   async (req: Request, res: Response) => {
+    const group = await GroupCollection.findOneByGroupId(req.params.groupId);
+    group.posts.map(async (post) => await FreetCollection.deleteOne(post));
     await GroupCollection.deleteOne(req.params.groupId);
     res.status(200).json({
-      message: 'Your freet was deleted successfully.'
+      message: 'Your group and all its freets were deleted successfully.'
     });
   }
 );
@@ -259,6 +261,36 @@ router.patch(
   async (req: Request, res: Response) => {
     const group = await GroupCollection.updateOnePost(req.params.groupId, req.body.freetId);
     await FreetCollection.updateOneInGroup(req.body.freetId, true);
+    res.status(200).json({
+      message: 'Your group\'s posts were updated successfully.',
+      group: util.constructGroupResponse(group),
+    });
+  }
+);
+
+/**
+ * Modify the group to remove a post
+ *
+ * @name PATCH /api/groups/:groupId/post/remove
+ *
+ * @param {string} freetId - The id of the post to remove
+ * @return {GroupResponse} - The updated group
+ * @throws {404} - If the groupId is not found
+ * @throws {404} - if freetId does not belong to an account or is not valid
+ * @throws {409} - if post given by freetId is not in the group's posts
+ * @throws {403} - if the user is not logged in
+ */
+ router.patch(
+  '/:groupId/post',
+  [
+    userValidator.isUserLoggedIn,
+    groupValidator.isGroupExists,
+    groupValidator.isFreetExists,
+    groupValidator.isFreetNotInGroup,
+  ],
+  async (req: Request, res: Response) => {
+    const group = await GroupCollection.deleteOnePost(req.params.groupId, req.body.freetId);
+    await FreetCollection.updateOneInGroup(req.body.freetId, false); //freet is no longer in a group
     res.status(200).json({
       message: 'Your group\'s posts were updated successfully.',
       group: util.constructGroupResponse(group),

@@ -59,7 +59,7 @@ class GroupCollection {
    * @param {string} userId - The userId of the user to find the groups of
    * @return {Promise<Array<HydratedDocument<Group>>> | Promise<null>} - The group with the given name, if any
    */
-   static async findAllByMember(userId: Types.ObjectId | string): Promise<Array<HydratedDocument<Group>>> {
+  static async findAllByMember(userId: Types.ObjectId | string): Promise<Array<HydratedDocument<Group>>> {
     return GroupModel.find({members: userId}).sort({name: -1}).populate('administrators members posts');
   }
 
@@ -69,7 +69,7 @@ class GroupCollection {
    * @param {string} userId - The userId of the user to find the groups of
    * @return {Promise<Array<HydratedDocument<Group>>> | Promise<null>} - The group with the given name, if any
    */
-   static async findAllByAdmin(userId: Types.ObjectId | string): Promise<Array<HydratedDocument<Group>>> {
+  static async findAllByAdmin(userId: Types.ObjectId | string): Promise<Array<HydratedDocument<Group>>> {
     return GroupModel.find({administrators: userId}).sort({name: -1}).populate('administrators members posts');
   }
 
@@ -80,7 +80,7 @@ class GroupCollection {
    * @param {string} freetId - The freet to be added to the group
    * @return {Promise<HydratedDocument<Group>>} - The newly updated group
    */
-   static async updateOnePost(groupId:Types.ObjectId | string, freetId: string | Types.ObjectId): Promise<HydratedDocument<Group>> {
+  static async updateOnePost(groupId:Types.ObjectId | string, freetId: string | Types.ObjectId): Promise<HydratedDocument<Group>> {
     const group = await GroupModel.findOne({_id: groupId});
     const freet = await FreetCollection.findOne(freetId);
     group.posts.push(freet._id);
@@ -95,7 +95,7 @@ class GroupCollection {
    * @param {string} memberId - The user to be added to the group
    * @return {Promise<HydratedDocument<Group>>} - The newly updated group
    */
-   static async updateOneMember(groupId:Types.ObjectId | string, memberId: string | Types.ObjectId): Promise<HydratedDocument<Group>> {
+  static async updateOneMember(groupId:Types.ObjectId | string, memberId: string | Types.ObjectId): Promise<HydratedDocument<Group>> {
     const group = await GroupModel.findOne({_id: groupId});
     const user = await UserCollection.findOneByUserId(memberId);
     group.members.push(user._id);
@@ -110,7 +110,7 @@ class GroupCollection {
    * @param {string} adminId - The user to be added as admin to the group
    * @return {Promise<HydratedDocument<Group>>} - The newly updated group
    */
-   static async updateOneAdministrator(groupId:Types.ObjectId | string, adminId: string | Types.ObjectId): Promise<HydratedDocument<Group>> {
+  static async updateOneAdministrator(groupId:Types.ObjectId | string, adminId: string | Types.ObjectId): Promise<HydratedDocument<Group>> {
     const group = await GroupModel.findOne({_id: groupId});
     const user = await UserCollection.findOneByUserId(adminId);
     group.administrators.push(user._id);
@@ -125,7 +125,7 @@ class GroupCollection {
    * @param {boolean} isPrivate - The privacy setting to use for the group
    * @return {Promise<HydratedDocument<Group>>} - The newly updated group
    */
-   static async updateOnePrivacy(groupId:Types.ObjectId | string, isPrivate: boolean): Promise<HydratedDocument<Group>> {
+  static async updateOnePrivacy(groupId:Types.ObjectId | string, isPrivate: boolean): Promise<HydratedDocument<Group>> {
     const group = await GroupModel.findOne({_id: groupId});
     group.isPrivate = isPrivate;
     await group.save();
@@ -138,11 +138,24 @@ class GroupCollection {
    * @param {string} groupId - The groupId of group to delete
    * @return {Promise<Boolean>} - true if the group has been deleted, false otherwise
    */
-     static async deleteOne(groupId: Types.ObjectId | string): Promise<boolean> {
-      const group = await GroupModel.deleteOne({_id: groupId});
-      return group !== null;
-    }
+  static async deleteOne(groupId: Types.ObjectId | string): Promise<boolean> {
+    const group = await GroupModel.deleteOne({_id: groupId});
+    return group !== null;
+  }
 
+  /**
+   * Delete a group with groupId's post with given freetId
+   * 
+   * @param {string} groupId - The groupId of group to remove post from
+   * @param {string} freetId - The freetId of the post to delete
+   * @return {Promise<HydratedDocument<Group>>} - The newly updated group
+   */
+  static async deleteOnePost(groupId: Types.ObjectId | string, freetId: Types.ObjectId | string): Promise<HydratedDocument<Group>> {
+    const group = await GroupModel.findOne({_id: groupId});
+    group.posts.filter((post) => post._id !== freetId);
+    await group.save();
+    return group.populate('administrators members posts');
+  }
 }
 
 export default GroupCollection;
