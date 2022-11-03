@@ -44,13 +44,13 @@ class FreetCollection {
   }
 
   /**
-   * Get all the freets in the database
+   * Get all the freets in the database that are not in a group
    *
-   * @return {Promise<HydratedDocument<Freet>[]>} - An array of all of the freets
+   * @return {Promise<HydratedDocument<Freet>[]>} - An array of all of the freets not in a group
    */
   static async findAll(): Promise<Array<HydratedDocument<Freet>>> {
     // Retrieves freets and sorts them from most to least recent
-    return FreetModel.find({}).sort({dateModified: -1}).populate('authorId');
+    return FreetModel.find({inGroup: false}).sort({dateModified: -1}).populate('authorId');
   }
 
   /**
@@ -95,6 +95,20 @@ class FreetCollection {
     const freet = await FreetModel.findOne({_id: freetId});
     freet.isAnonymous = isAnon;
     freet.dateModified = new Date();
+    await freet.save();
+    return freet.populate('authorId');
+  }
+
+  /**
+   * Update a freet with the new group setting
+   *
+   * @param {string} freetId - The id of the freet to be updated
+   * @param {boolean} inGroup - Whether the freet is in a group or not
+   * @return {Promise<HydratedDocument<Freet>>} - The newly updated freet
+   */
+   static async updateOneInGroup(freetId: Types.ObjectId | string, inGroup: boolean): Promise<HydratedDocument<Freet>> {
+    const freet = await FreetModel.findOne({_id: freetId});
+    freet.inGroup = inGroup;
     await freet.save();
     return freet.populate('authorId');
   }

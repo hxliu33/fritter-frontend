@@ -10,6 +10,7 @@ type FreetResponse = {
   content: string;
   dateModified: string;
   isAnonymous: boolean;
+  inGroup: boolean;
 };
 
 /**

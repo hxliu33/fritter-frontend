@@ -32,7 +32,7 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
     return;
   }
 
-  const group = await GroupCollection.findOneByName(req.params.groupId as string);
+  const group = await GroupCollection.findOneByGroupId(req.params.groupId as string);
   if (!group) {
     res.status(404).json({
       error: `A group with groupId ${req.params.groupId as string} does not exist.`
@@ -88,13 +88,6 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
   const {groupId} = req.params as {groupId: string};
   const group = await GroupCollection.findOneByGroupId(groupId);
 
-  const validFormat = Types.ObjectId.isValid(req.body.userId);
-  if (!validFormat) {
-    res.status(400).json({
-      error: 'Not valid user ID format.'
-    });
-    return;
-  }
   if (!group.members.includes(req.session.userId as Types.ObjectId)) {
     res.status(403).json({
       error: 'User must be a member of the group.'
@@ -160,18 +153,30 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
   const {groupId} = req.params as {groupId: string};
   const group = await GroupCollection.findOneByGroupId(groupId);
 
-  const validFormat = Types.ObjectId.isValid(req.body.userId);
-  if (!validFormat) {
-    res.status(400).json({
-      error: 'Not valid user ID format.'
-    });
-    return;
-  }
   if (!group.administrators.includes(req.session.userId as Types.ObjectId)) {
     res.status(403).json({
       error: 'User must be an admin of the group.'
     });
     return;
+  }
+
+  next();
+};
+
+/**
+ * Checks if the current user is an admin of the group if the group is private
+ */
+ const isGroupJoinable = async (req: Request, res: Response, next: NextFunction) => {
+  const {groupId} = req.params as {groupId: string};
+  const group = await GroupCollection.findOneByGroupId(groupId);
+
+  if (group.isPrivate) {
+    if (!group.administrators.includes(req.session.userId as Types.ObjectId)) {
+      res.status(403).json({
+        error: 'User must be an admin to add a member to a private group.'
+      });
+      return;
+    }
   }
 
   next();
@@ -263,6 +268,7 @@ export {
   isGivenUserMember,
   isGivenUserNotMember,
   isUserAdmin,
+  isGroupJoinable,
   isGivenUserAdminAlready,
   isUserExists,
   isFreetExists,

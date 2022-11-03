@@ -1,5 +1,7 @@
 import type {Request, Response} from 'express';
 import express from 'express';
+import FreetCollection from 'server/freet/collection';
+import UserCollection from 'server/user/collection';
 import GroupCollection from '../group/collection';
 import * as groupValidator from '../group/middleware';
 import * as userValidator from '../user/middleware';
@@ -169,13 +171,13 @@ router.patch(
  *
  * @name PATCH /api/groups/:groupId/member
  *
- * @param {string} userId - The id of the user to add
+ * @param {string} username - The username of the user to add
  * @return {GroupResponse} - The updated group
  * @throws {404} - If the groupId is not found
  * @throws {404} - if userId does not belong to an account
  * @throws {400} - if userId is not valid
  * @throws {409} - if user given by userId is already a member of the group
- * @throws {403} - if the current user is not an admin of the group
+ * @throws {403} - if the current user is not an admin of the group and the group is private
  * @throws {403} - if the current user is not logged in
  */
  router.patch(
@@ -184,11 +186,12 @@ router.patch(
     userValidator.isUserLoggedIn,
     groupValidator.isGroupExists,
     groupValidator.isUserExists,
-    groupValidator.isUserAdmin,
+    groupValidator.isGroupJoinable,
     groupValidator.isGivenUserMember,
   ],
   async (req: Request, res: Response) => {
-    const group = await GroupCollection.updateOneMember(req.params.groupId, req.body.userId);
+    const user = await UserCollection.findOneByUsername(req.body.username);
+    const group = await GroupCollection.updateOneMember(req.params.groupId, user._id);
     res.status(200).json({
       message: 'Your group\'s members list was updated successfully.',
       group: util.constructGroupResponse(group),
@@ -201,7 +204,7 @@ router.patch(
  *
  * @name PATCH /api/groups/:groupId/admin
  *
- * @param {string} userId - The id of the user to add
+ * @param {string} username - The username of the user to add
  * @return {GroupResponse} - The updated group
  * @throws {404} - If the groupId is not found
  * @throws {404} - if userId does not belong to an account
@@ -222,7 +225,8 @@ router.patch(
     groupValidator.isGivenUserAdminAlready,
   ],
   async (req: Request, res: Response) => {
-    const group = await GroupCollection.updateOneAdministrator(req.params.groupId, req.body.userId);
+    const user = await UserCollection.findOneByUsername(req.body.username);
+    const group = await GroupCollection.updateOneAdministrator(req.params.groupId, user._id);
     res.status(200).json({
       message: 'Your group\'s administrators list was updated successfully.',
       group: util.constructGroupResponse(group),
@@ -254,6 +258,7 @@ router.patch(
   ],
   async (req: Request, res: Response) => {
     const group = await GroupCollection.updateOnePost(req.params.groupId, req.body.freetId);
+    await FreetCollection.updateOneInGroup(req.body.freetId, true);
     res.status(200).json({
       message: 'Your group\'s posts were updated successfully.',
       group: util.constructGroupResponse(group),

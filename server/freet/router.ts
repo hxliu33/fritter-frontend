@@ -9,11 +9,11 @@ import UserCollection from '../user/collection';
 const router = express.Router();
 
 /**
- * Get all the freets
+ * Get all the freets not in a group
  *
  * @name GET /api/freets
  *
- * @return {FreetResponse[]} - A list of all the freets sorted in descending
+ * @return {FreetResponse[]} - A list of all the freets not in a group sorted in descending
  *                      order by date modified
  */
 /**
