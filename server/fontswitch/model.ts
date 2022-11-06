@@ -11,15 +11,15 @@ import type {User} from '../user/model';
 export type FontSwitch = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   user: Types.ObjectId;
-  fonts: string[];
-  currentFont: string;
+  currentFontId: string;
+  currentFontName: string;
 };
 
 export type PopulatedFontSwitch = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   user: User;
-  fonts: string[];
-  currentFont: string;
+  currentFontId: string;
+  currentFontName: string;
 };
 
 // Mongoose schema definition for interfacing with a MongoDB table
@@ -32,13 +32,13 @@ const FontSwitchSchema = new Schema<FontSwitch>({
     required: true,
     ref: 'User',
   },
-  // The fonts the user can use
-  fonts: {
-    type: [String],
-    required: true
+  // The current font ID the user is using
+  currentFontId: {
+    type: String,
+    required: true,
   },
-  // The current font the user is using
-  currentFont: {
+  // The name of the current font the user is using
+  currentFontName: {
     type: String,
     required: true,
   }

@@ -5,8 +5,8 @@ import type {FontSwitch, PopulatedFontSwitch} from '../fontswitch/model';
 type FontSwitchResponse = {
   _id: string;
   user: string;
-  fonts: string[];
-  currentFont: string;
+  currentFontId: string;
+  currentFontName: string;
 };
 
 /**

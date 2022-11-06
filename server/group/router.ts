@@ -1,7 +1,7 @@
 import type {Request, Response} from 'express';
 import express from 'express';
-import FreetCollection from 'server/freet/collection';
-import UserCollection from 'server/user/collection';
+import FreetCollection from '../freet/collection';
+import UserCollection from '../user/collection';
 import GroupCollection from '../group/collection';
 import * as groupValidator from '../group/middleware';
 import * as userValidator from '../user/middleware';
@@ -281,7 +281,7 @@ router.patch(
  * @throws {403} - if the user is not logged in
  */
  router.patch(
-  '/:groupId/post',
+  '/:groupId/post/remove',
   [
     userValidator.isUserLoggedIn,
     groupValidator.isGroupExists,

@@ -16,15 +16,15 @@ class FontSwitchCollection {
    * Add a font switch object to the collection
    *
    * @param {string} userId - The id of the user of the font switch setting
-   * @param {string[]} fonts - The list of fonts available to the user
-   * @param {string} currentFont - The current font to use
+   * @param {string} currentFontId - The ID of the current font to use
+   * @param {string} currentFontName - The name of the current font to use
    * @return {Promise<HydratedDocument<FontSwitch>>} - The newly created font switch setting
    */
-  static async addOne(userId: Types.ObjectId | string, fonts: string[], currentFont: string): Promise<HydratedDocument<FontSwitch>> {
+  static async addOne(userId: Types.ObjectId | string, currentFontId: string, currentFontName: string): Promise<HydratedDocument<FontSwitch>> {
     const fontSwitch = new FontSwitchModel({
       user: userId,
-      fonts,
-      currentFont,
+      currentFontId,
+      currentFontName,
     });
     await fontSwitch.save(); // Saves font switch to MongoDB
     return fontSwitch.populate('user');
@@ -55,51 +55,17 @@ class FontSwitchCollection {
    * Update a font switch setting with the new current font
    *
    * @param {string} fontSwitchId - The id of the font switch setting to be updated
-   * @param {string} currentFont - The new current font of the user
+   * @param {string} currentFontId - The new current font of the user
+   * @param {string} currentFontName - The name of the new current font of the user
    * @return {Promise<HydratedDocument<FontSwitch>>} - The newly updated pause setting
    */
-  static async updateOne(fontSwitchId: Types.ObjectId | string, currentFont: string): Promise<HydratedDocument<FontSwitch>> {
+  static async updateOne(fontSwitchId: Types.ObjectId | string, currentFontId: string, currentFontName: string): Promise<HydratedDocument<FontSwitch>> {
     const fontSwitch = await FontSwitchModel.findOne({_id: fontSwitchId});
-    fontSwitch.currentFont = currentFont.trim();
+    fontSwitch.currentFontId = currentFontId.trim();
+    fontSwitch.currentFontName = currentFontName.trim();
     await fontSwitch.save();
     return fontSwitch.populate('user');
   }
-
-  /**
-   * Update a list of potential fonts with a new font
-   *
-   * @param {string} fontSwitchId - The id of the font switch setting to be updated
-   * @param {string} newFont - The new font the user would like to add
-   * @return {Promise<HydratedDocument<FontSwitch>>} - The newly updated font switch setting
-   */
-   static async updateOneList(fontSwitchId: Types.ObjectId | string, newFont: string): Promise<HydratedDocument<FontSwitch>> {
-    const fontSwitch = await FontSwitchModel.findOne({_id: fontSwitchId});
-    const fontList = fontSwitch.fonts;
-    fontList.push(newFont.trim());
-    fontSwitch.fonts = fontList;
-    await fontSwitch.save();
-    return fontSwitch.populate('user');
-  }
-
-  /**
-   * Update the list of potential fonts to remove the given font.
-   *
-   * @param {string} fontSwitchId - The fontSwitchId of the setting to update
-   * @param {string} fontToRemove - The font the user would like to remove
-   * @return {Promise<HydratedDocument<FontSwitch>>} - The newly updated font switch setting
-   */
-    static async updateOneRemove(fontSwitchId: Types.ObjectId | string, fontToRemove: string): Promise<HydratedDocument<FontSwitch>> {
-        const fontSwitch = await FontSwitchModel.findOne({_id: fontSwitchId});
-        const fontList = fontSwitch.fonts;
-        var idxToRemove = fontList.indexOf(fontToRemove.trim());
-        while (idxToRemove != -1) {
-            fontList.splice(idxToRemove, 1);
-            idxToRemove = fontList.indexOf(fontToRemove.trim());
-        }
-        fontSwitch.fonts = fontList;
-        await fontSwitch.save();
-        return fontSwitch.populate('user');
-      }
 
 }
 
