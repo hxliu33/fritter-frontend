@@ -19,12 +19,27 @@
           @input="field.value = $event.target.value"
         />
         <input
-          v-else
-          :type="field.id === 'password' ? 'password' : 'text'"
+          v-else-if="field.id === 'password'"
+          :type="password"
           :name="field.id"
           :value="field.value"
           @input="field.value = $event.target.value"
-        >
+        />
+        <input
+          v-else-if="field.id === 'minutes'"
+          :type="number"
+          :min="1"
+          :name="field.id"
+          :value="field.value"
+          @input="field.value = $event.target.value"
+        />
+        <input 
+          v-else
+          :type="text"
+          :name="field.id"
+          :value="field.value"
+          @input="field.value = $event.target.value"
+        />
       </div>
     </article>
     <article v-else>
@@ -61,8 +76,10 @@ export default {
       hasBody: false, // Whether or not form request has a body
       setUsername: false, // Whether or not stored username should be updated after form submission
       refreshFreets: false, // Whether or not stored freets should be updated after form submission
+      // setThreshold: false, // Whether or not the pause threshold should be updated after form submission
       alerts: {}, // Displays success/error messages encountered during form submission
-      callback: null // Function to run after successful form submission
+      // returnId: false, // Whether or not to return created freet's ID
+      callback: null, // Function to run after successful form submission
     };
   },
   methods: {
@@ -102,6 +119,12 @@ export default {
         if (this.refreshFreets) {
           this.$store.commit('refreshFreets');
         }
+
+        // if (this.setThreshold) {
+        //   const text = await r.text();
+        //   const res = text ? JSON.parse(text) : {pause: null};
+        //   this.$store.commit('updatePauseThreshold', res.pause ? res.pause.threshold : null);
+        // }
 
         if (this.callback) {
           this.callback();

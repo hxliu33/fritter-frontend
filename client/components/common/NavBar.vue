@@ -16,6 +16,12 @@
       </router-link>
       <router-link
         v-if="$store.state.username"
+        to="/groups"
+      >
+        Groups
+      </router-link>
+      <router-link
+        v-if="$store.state.username"
         to="/account"
       >
         Account

@@ -17,6 +17,18 @@
       <LogoutForm />
       <DeleteAccountForm />
     </section>
+    <section>
+      <header>
+        <h2>Display settings</h2>
+      </header>
+      <FontSwitchForm />
+    </section>
+    <section>
+      <header>
+        <h2>Pause settings</h2>
+      </header>
+      <PauseForm />
+    </section>
   </main>
 </template>
 
@@ -24,6 +36,8 @@
 import ChangeUsernameForm from '@/components/Account/ChangeUsernameForm.vue';
 import ChangePasswordForm from '@/components/Account/ChangePasswordForm.vue';
 import DeleteAccountForm from '@/components/Account/DeleteAccountForm.vue';
+import FontSwitchForm from '@/components/Account/FontSwitchForm.vue';
+import PauseForm from '@/components/Account/PauseForm.vue';
 import LogoutForm from '@/components/Account/LogoutForm.vue';
 
 export default {
@@ -32,7 +46,12 @@ export default {
     ChangeUsernameForm,
     ChangePasswordForm,
     DeleteAccountForm,
-    LogoutForm
+    LogoutForm,
+    FontSwitchForm,
+    PauseForm,
+  },
+  beforeMounted() {
+    // GET request for list of fonts to pass into FontSwitchForm
   }
 };
 </script>

@@ -145,7 +145,9 @@ export default {
        * @param params.callback - Function to run if the the request succeeds
        */
       const options = {
-        method: params.method, headers: {'Content-Type': 'application/json'}
+        method: params.method,
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'same-origin' // Sends express-session credentials with request
       };
       if (params.body) {
         options.body = params.body;

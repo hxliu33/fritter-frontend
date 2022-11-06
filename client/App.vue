@@ -1,9 +1,13 @@
 <template>
-  <div id="app">
-    <header>
-      <NavBar />
-    </header>
-    <router-view />
+  <div id="app" class="fonts">
+    <div
+      :class="$store.state.font.id"
+    >
+      <header>
+        <NavBar />
+      </header>
+      <router-view />
+    </div>
   </div>
 </template>
 
@@ -73,5 +77,45 @@ main {
 
 .alerts .success {
     background-color: rgb(45, 135, 87);
+}
+
+.fonts .arial {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.fonts .cambria {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.fonts .courier-new {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.fonts .georgia {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.fonts .gill-sans {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.fonts .impact {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.fonts .lucida-sans {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.fonts .times-new-roman {
+    font-family:'Times New Roman', Times, serif;
+}
+
+.fonts .trebuchet-ms {
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.fonts .verdana {
+    font-family: Verdana, Geneva, Tahoma, sans-serif; 
 }
 </style>
