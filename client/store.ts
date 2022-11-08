@@ -20,9 +20,9 @@ const store = new Vuex.Store({
     },
     username: null, // Username of the logged in user
     alerts: {}, // global success/error messages encountered during submissions to non-visible forms
-    font: {id: 'arial', value: 'Arial'}, // current font the user is viewing content in
-    sessionTimeElapsed: 0, // amount of time passed since the user entered Freets or Groups pages
-    pauseThreshold: 120, // amount of time in minutes before the user gets a pop-up to stop
+    font: null, // current font the user is viewing content in
+    sessionTimeElapsed: null, // amount of time passed since the user entered Freets or Groups pages
+    pauseThreshold: null, // amount of time in minutes before the user gets a pop-up to stop
   },
   mutations: {
     alert(state, payload) {
@@ -76,14 +76,14 @@ const store = new Vuex.Store({
        */
       state.group.freets = freets;
     },
-    updatePauseThreshold(state, threshold) {
+    setPauseThreshold(state, threshold) {
       /**
        * Update the stored minimum pause threshold to the provided number.
        * @param threshold - Pause threshold in minutes
        */
       state.pauseThreshold = threshold;
     },
-    updateTimeElapsed(state, time) {
+    setTimeElapsed(state, time) {
       /**
        * Update the session time elapsed
        * @param time - Time elapsed of user on Groups or Freets pages
@@ -94,7 +94,7 @@ const store = new Vuex.Store({
       /**
        * Request the server for the currently available freets.
        */
-      const url = state.filter ? `/api/users/${state.filter}/freets` : '/api/freets';
+      const url = state.filter ? `/api/freets?author=${state.filter}` : '/api/freets';
       const res = await fetch(url).then(async r => r.json());
       state.freets = res;
     },
