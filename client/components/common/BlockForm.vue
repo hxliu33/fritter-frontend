@@ -155,7 +155,7 @@ export default {
           const text = await res.text();
           const info = text ? JSON.parse(text) : {pause: null};
           this.$store.commit('setPauseThreshold', info.pause ? info.pause.threshold : null);
-          this.$store.commit('setTimeElapsed', info.pause ? info.pause.minutesActive : null);
+          this.$store.commit('setTimeElapsed', 0);
         }
 
         if (this.createFont) {

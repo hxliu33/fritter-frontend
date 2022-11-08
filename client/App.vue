@@ -28,7 +28,7 @@ export default {
 
     // Clear alerts on page refresh
     this.$store.state.alerts = {};
-  }
+  },
 };
 </script>
 
