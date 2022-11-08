@@ -28,6 +28,7 @@ class FreetCollection {
       content,
       dateModified: date,
       isAnonymous: isAnon,
+      inGroup: false,
     });
     await freet.save(); // Saves freet to MongoDB
     return freet.populate('authorId');
@@ -54,7 +55,7 @@ class FreetCollection {
   }
 
   /**
-   * Get all the freets in by given author
+   * Get all the freets by given author
    *
    * @param {string} username - The username of author of the freets
    * @param {boolean} getNonAnon - Whether we want to get the non-anonymous freets or all of them

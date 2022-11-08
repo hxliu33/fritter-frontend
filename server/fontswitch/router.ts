@@ -39,10 +39,9 @@ router.get(
  *
  * @return {FontSwitchResponse} - The created font switch setting
  * @throws {403} - If the user is not logged in
- * @throws {400} - If font list has empty fonts
  */
 router.post(
-  '/list',
+  '/',
   [
     userValidator.isUserLoggedIn,
   ],
@@ -67,7 +66,7 @@ router.post(
  * @param {string} font - The name of the font to make current
  * @return {FontSwitchResponse} - The updated font switch setting
  * @throws {403} - If the user is not logged in
- * @throws {404} - If font is empty or not in the list of available fonts
+ * @throws {404} - If font is empty or no font switch setting exists for the user
  * @throws {409} - If the current font is already the new font
  */
  router.patch(

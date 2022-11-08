@@ -12,6 +12,8 @@ export default {
       method: 'POST',
       hasBody: true,
       setUsername: true,
+      getThreshold: true,
+      getFont: true,
       fields: [
         {id: 'username', label: 'Username', value: ''},
         {id: 'password', label: 'Password', value: ''}

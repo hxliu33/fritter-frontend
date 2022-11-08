@@ -9,6 +9,8 @@ export default {
   data() {
     return {
       title: 'Switch your current font',
+      hasBody: true,
+      url: '/api/font/current',
       choices: [
         {id: 'arial', value: 'Arial'},
         {id: 'cambria', value: 'Cambria'},
@@ -23,6 +25,11 @@ export default {
       ],
       current: this.$store.state.font.value,
       purpose: 'fonts',
+      callback: () => {
+        this.$store.commit('alert', {
+          message: 'Your font has been switched!', status: 'success'
+        });
+      }
     };
   }
 };

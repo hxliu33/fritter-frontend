@@ -10,6 +10,15 @@
             :placeholder="current"
             @input="onChange"
         ></v-select>
+        <section class="alerts">
+            <article
+                v-for="(status, alert, index) in alerts"
+                :key="index"
+                :class="status"
+            >
+                <p>{{ alert }}</p>
+            </article>
+        </section>
     </form>
 </template>
 
@@ -22,19 +31,51 @@ Vue.component('v-select', vSelect);
 
 export default {
     name: 'Dropdown',
+    hasBody: false, //Whether or not request has a body
+    url: '', //Url to submit form to
+    alerts: {}, // Displays success/error messages encountered during selection change
+    callback: null, //Function to run after successful form submission
     //necessary inputs: choices: [], title: '', stored: '', purpose: ''
     methods: {
-        onChange(value) {
+        onChange(selection) {
             if (this.purpose === 'groups') {
                 // send API request
                 // commit groups list change to store
             } else if (this.purpose === 'fonts') {
                 // send API request
-                this.$store.commit('setFont', value);
+                const params = {
+                    method: 'PATCH',
+                    field: {fontId: selection.id, fontName: selection.value},
+                };
+                this.request(params);
+                this.$store.commit('setFont', selection);
             }
         },
         async request(params) {
             //send API request
+            const options = {
+                method: params.method,
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'same-origin', // Sends express-session credentials with request
+            }
+            if (this.hasBody) {
+                options.body = JSON.stringify(params.field);
+            }
+
+            try {
+                const r = await fetch(this.url, options);
+                if (!r.ok) {
+                    const res = await r.json();
+                    throw new Error(res.error);
+                }
+
+                if (this.callback) {
+                    this.callback();
+                }
+            } catch (e) {
+                this.$set(this.alerts, e, 'error');
+                setTimeout(() => this.$delete(this.alerts, e), 3000);
+            }
         }
     },
 }
@@ -50,6 +91,15 @@ form {
   justify-content: space-between;
   margin-bottom: 14px;
   position: relative;
+}
+
+article > div {
+  display: flex;
+  flex-direction: column;
+}
+
+form > article p {
+  margin: 0;
 }
 
 form h3,

@@ -5,6 +5,7 @@ import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import * as util from './util';
 import UserCollection from '../user/collection';
+import GroupCollection from '../group/collection';
 
 const router = express.Router();
 
@@ -72,11 +73,10 @@ router.post(
   [
     userValidator.isUserLoggedIn,
     freetValidator.isValidFreetContent,
-    freetValidator.isValidFreetSetting,
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
-    const isAnon = (req.body.isAnon == "true") ?? false; //default for empty space is false anonymity setting
+    const isAnon = (req.body.isAnon as boolean) ?? false; //default for empty space is false anonymity setting
     const freet = await FreetCollection.addOne(userId, req.body.content, isAnon);
 
     res.status(201).json({

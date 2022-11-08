@@ -20,22 +20,28 @@
         />
         <input
           v-else-if="field.id === 'password'"
-          :type="password"
+          type="password"
           :name="field.id"
           :value="field.value"
           @input="field.value = $event.target.value"
         />
         <input
           v-else-if="field.id === 'minutes'"
-          :type="number"
+          type="number"
           :min="1"
           :name="field.id"
           :value="field.value"
           @input="field.value = $event.target.value"
         />
+        <input
+          v-else-if="field.id === 'isAnon' || field.id === 'isPrivate'"
+          type="checkbox"
+          :name="field.id"
+          v-model="field.value"
+        />
         <input 
           v-else
-          :type="text"
+          type="text"
           :name="field.id"
           :value="field.value"
           @input="field.value = $event.target.value"
@@ -76,7 +82,11 @@ export default {
       hasBody: false, // Whether or not form request has a body
       setUsername: false, // Whether or not stored username should be updated after form submission
       refreshFreets: false, // Whether or not stored freets should be updated after form submission
-      // setThreshold: false, // Whether or not the pause threshold should be updated after form submission
+      setThreshold: false, // Whether or not the pause threshold should be updated after form submission
+      createPause: false, // Whether or not the pause setting should be created
+      createFont: false, // Whether or not the font setting should be created
+      getThreshold: false, // Whether or not the pause threshold needs to be fetched
+      getFont: false, // Whether or not the font needs to be fetched
       alerts: {}, // Displays success/error messages encountered during form submission
       // returnId: false, // Whether or not to return created freet's ID
       callback: null, // Function to run after successful form submission
@@ -125,6 +135,75 @@ export default {
         //   const res = text ? JSON.parse(text) : {pause: null};
         //   this.$store.commit('updatePauseThreshold', res.pause ? res.pause.threshold : null);
         // }
+
+        if (this.createPause) {
+          const options = {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'same-origin', // Sends express-session credentials with request
+            body: JSON.stringify({
+              minutesActive: 0,
+              threshold: 120,
+            }),
+          };
+
+          const res = await fetch('/api/pause', options);
+          if (!res.ok) {
+            const errorRes = await res.json();
+            throw new Error(errorRes.error);
+          }
+          const text = await res.text();
+          const info = text ? JSON.parse(text) : {pause: null};
+          this.$store.commit('setPauseThreshold', info.pause ? info.pause.threshold : null);
+          this.$store.commit('setTimeElapsed', info.pause ? info.pause.minutesActive : null);
+        }
+
+        if (this.createFont) {
+          const options = {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'same-origin', // Sends express-session credentials with request
+          };
+          const res = await fetch('/api/font', options);
+          if (!res.ok) {
+            const errorRes = await res.json();
+            throw new Error(errorRes.error);
+          }
+          const text = JSON.parse(await res.text());
+          const font = {id: text.fontSwitch.currentFontId, value: text.fontSwitch.currentFontName};
+          this.$store.commit('setFont', font);
+        }
+
+        if (this.getThreshold) {
+          const options = {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'same-origin', // Sends express-session credentials with request
+          };
+          const res = await fetch('/api/pause', options);
+          if (!res.ok) {
+            const errorRes = await res.json();
+            throw new Error(errorRes.error);
+          }
+          const text = JSON.parse(await res.text());
+          this.$store.commit('setPauseThreshold', text ? text.threshold : null);
+        }
+
+        if (this.getFont) {
+          const options = {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'same-origin', // Sends express-session credentials with request
+          };
+          const res = await fetch('/api/font', options);
+          if (!res.ok) {
+            const errorRes = await res.json();
+            throw new Error(errorRes.error);
+          }
+          const text = JSON.parse(await res.text());
+          const font = {id: text.currentFontId, value: text.currentFontName};
+          this.$store.commit('setFont', font);
+        }
 
         if (this.callback) {
           this.callback();

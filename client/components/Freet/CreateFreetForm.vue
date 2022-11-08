@@ -12,7 +12,8 @@ export default {
       method: 'POST',
       hasBody: true,
       fields: [
-        {id: 'content', label: 'Content', value: ''}
+        {id: 'content', label: 'Content', value: ''},
+        {id: 'isAnon', label: 'Check this box if you would like your freet to be anonymous', value: false}
       ],
       title: 'Create a freet',
       refreshFreets: true,

@@ -290,7 +290,7 @@ router.patch(
   ],
   async (req: Request, res: Response) => {
     const group = await GroupCollection.deleteOnePost(req.params.groupId, req.body.freetId);
-    await FreetCollection.updateOneInGroup(req.body.freetId, false); //freet is no longer in a group
+    await FreetCollection.deleteOne(req.body.freetId);
     res.status(200).json({
       message: 'Your group\'s posts were updated successfully.',
       group: util.constructGroupResponse(group),

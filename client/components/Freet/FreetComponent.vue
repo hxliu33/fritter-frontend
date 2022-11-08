@@ -6,14 +6,28 @@
     class="freet"
   >
     <header>
-      <h3 class="author"
-        v-if="freet.isAnonymous === false">
-        @{{ freet.author }}
-      </h3>
-      <h3 class="author"
-        v-else>
-        @Anonymous
-      </h3>
+      <div
+        v-if="editing"
+      >
+        <h3 class="author"
+          v-if="this.isAnon === false">
+          @{{ freet.author }}
+        </h3>
+        <h3 class="author"
+          v-else>
+          @Anonymous
+        </h3>
+      </div>
+      <div v-else >
+        <h3 class="author"
+          v-if="this.freet.isAnonymous === false">
+          @{{ freet.author }}
+        </h3>
+        <h3 class="author"
+          v-else>
+          @Anonymous
+        </h3>
+      </div>
       <div
         v-if="$store.state.username === freet.author"
         class="actions"
@@ -29,6 +43,12 @@
           @click="stopEditing"
         >
           🚫 Discard changes
+        </button>
+        <button
+          v-if="editing"
+          @click="changeAnon"
+        >
+          👤 Change anonymity
         </button>
         <button
           v-if="!editing"
@@ -82,6 +102,7 @@ export default {
   data() {
     return {
       editing: false, // Whether or not this freet is in edit mode
+      isAnon: this.freet.isAnonymous, // Whether or not this freet is anonymous
       draft: this.freet.content, // Potentially-new content for this freet
       alerts: {} // Displays success/error messages encountered during freet modification
     };
@@ -101,12 +122,19 @@ export default {
       this.editing = false;
       this.draft = this.freet.content;
     },
+    changeAnon() {
+      /**
+       * Changes anonymity setting of this freet.
+       */
+      this.isAnon = !this.isAnon;
+    },
     deleteFreet() {
       /**
        * Deletes this freet.
        */
       const params = {
         method: 'DELETE',
+        url: `/api/freets/${this.freet._id}`,
         callback: () => {
           this.$store.commit('alert', {
             message: 'Successfully deleted freet!', status: 'success'
@@ -119,23 +147,39 @@ export default {
       /**
        * Updates freet to have the submitted draft content.
        */
-      if (this.freet.content === this.draft) {
+      if (this.freet.content === this.draft && this.freet.isAnonymous === this.isAnon) {
         const error = 'Error: Edited freet content should be different than current freet content.';
         this.$set(this.alerts, error, 'error'); // Set an alert to be the error text, timeout of 3000 ms
         setTimeout(() => this.$delete(this.alerts, error), 3000);
         return;
       }
 
-      const params = {
-        method: 'PATCH',
-        message: 'Successfully edited freet!',
-        body: JSON.stringify({content: this.draft}),
-        callback: () => {
-          this.$set(this.alerts, params.message, 'success');
-          setTimeout(() => this.$delete(this.alerts, params.message), 3000);
-        }
-      };
-      this.request(params);
+      if (this.freet.content !== this.draft) {
+        const params = {
+          method: 'PATCH',
+          message: 'Successfully edited freet!',
+          body: JSON.stringify({content: this.draft}),
+          url: `/api/freets/${this.freet._id}`,
+          callback: () => {
+            this.$set(this.alerts, params.message, 'success');
+            setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+          }
+        };
+        this.request(params);
+      }
+      if (this.freet.isAnonymous !== this.isAnon) {
+        const params = {
+          method: 'PATCH',
+          message: 'Successfully edited freet anonymity!',
+          body: JSON.stringify({content: this.freet.content}),
+          url: `/api/freets/${this.freet._id}?isAnon=${this.isAnon}`,
+          callback: () => {
+            this.$set(this.alerts, params.message, 'success');
+            setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+          }
+        };
+        this.request(params);
+      }
     },
     async request(params) {
       /**
@@ -147,14 +191,14 @@ export default {
       const options = {
         method: params.method,
         headers: {'Content-Type': 'application/json'},
-        credentials: 'same-origin' // Sends express-session credentials with request
+        credentials: 'same-origin', // Sends express-session credentials with request
       };
       if (params.body) {
         options.body = params.body;
       }
 
       try {
-        const r = await fetch(`/api/freets/${this.freet._id}`, options);
+        const r = await fetch(params.url, options);
         if (!r.ok) {
           const res = await r.json();
           throw new Error(res.error);
