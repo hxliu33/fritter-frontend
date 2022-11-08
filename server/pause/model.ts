@@ -11,14 +11,12 @@ import type {User} from '../user/model';
 export type Pause = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   user: Types.ObjectId;
-  minutesActive: number;
   threshold: number;
 };
 
 export type PopulatedPause = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   user: User;
-  minutesActive: number;
   threshold: number;
 };
 
@@ -31,12 +29,6 @@ const PauseSchema = new Schema<Pause>({
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'User',
-  },
-  // The number of minutes the user has been active in this session
-  minutesActive: {
-    type: Number,
-    required: true,
-    min: [0, 'Minutes active cannot be negative!'],
   },
   // The threshold of time the user wants the pause notification to pop up after
   threshold: {

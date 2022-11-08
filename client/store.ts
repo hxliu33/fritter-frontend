@@ -106,30 +106,6 @@ const store = new Vuex.Store({
       const res = await fetch(url).then(async r => r.json());
       state.group.freets = res.posts;
     },
-    // async refreshTimeElapsed(state, elapsedTime) {
-    //   /**
-    //    * Send elapsed session time to server and check for threshold.
-    //    */
-    //   const url = '/api/pause/minutesActive';
-    //   const body = JSON.stringify({minutes: elapsedTime + state.sessionTimeElapsed});
-    //   const options = {
-    //     method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: body
-    //   };
-
-    //   try {
-    //     const r = await fetch(url, options);
-    //     if (!r.ok) {
-    //       const res = r.json();
-    //       throw new Error(res.error);
-    //     }
-
-    //     const res = r.json();
-    //     state.sessionTimeElapsed = res.pause.minutesActive;
-    //     if (state.sessionTimeElapsed >= res.pause.threshold) {
-    //       //pop-up box
-    //     }
-    //   }
-    // },
     setFont(state, font) {
       /**
        * Update the stored font to the specified one.

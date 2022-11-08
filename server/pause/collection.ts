@@ -16,14 +16,12 @@ class PauseCollection {
    * Add a pause to the collection
    *
    * @param {string} user - The id of the user of the pause setting
-   * @param {number} minutesActive - The number of minutes the user has been active in their current session
    * @param {number} threshold - The number of minutes the user wants to be active in their current session before receiving a pause notification
    * @return {Promise<HydratedDocument<Pause>>} - The newly created pause setting
    */
-  static async addOne(user: Types.ObjectId | string, minutesActive: number, threshold: number): Promise<HydratedDocument<Pause>> {
+  static async addOne(user: Types.ObjectId | string, threshold: number): Promise<HydratedDocument<Pause>> {
     const pause = new PauseModel({
       user,
-      minutesActive,
       threshold,
     });
     await pause.save(); // Saves pause to MongoDB
@@ -49,20 +47,6 @@ class PauseCollection {
    static async findOneByUserId(userId: Types.ObjectId | string): Promise<HydratedDocument<Pause>> {
     const user = await UserCollection.findOneByUserId(userId);
     return PauseModel.findOne({user: user._id}).populate('user');
-  }
-
-  /**
-   * Update a pause setting with the new minutes active
-   *
-   * @param {string} pauseId - The id of the pause setting to be updated
-   * @param {number} minutesActive - The new minutes active of the user
-   * @return {Promise<HydratedDocument<Pause>>} - The newly updated pause setting
-   */
-  static async updateOne(pauseId: Types.ObjectId | string, minutesActive: number): Promise<HydratedDocument<Pause>> {
-    const pause = await PauseModel.findOne({_id: pauseId});
-    pause.minutesActive = minutesActive;
-    await pause.save();
-    return pause.populate('user');
   }
 
   /**

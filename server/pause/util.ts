@@ -5,7 +5,6 @@ import type {Pause, PopulatedPause} from '../pause/model';
 type PauseResponse = {
   _id: string;
   user: string;
-  minutesActive: number;
   threshold: number;
 };
 

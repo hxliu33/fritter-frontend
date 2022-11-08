@@ -19,11 +19,11 @@ import PauseCollection from './collection';
  * Checks if the content of the pause setting in req.body is valid, i.e not empty
  */
 const isValidPauseContent = async (req: Request, res: Response, next: NextFunction) => {
-  const {minutesActive, threshold} = req.body as {minutesActive: number, threshold: number};
+  const {threshold} = req.body as {threshold: number};
 
-  if (isNaN(+minutesActive) || isNaN(+threshold)) {
+  if (isNaN(+threshold)) {
     res.status(400).json({
-      error: 'Pause minutesActive and threshold must be numbers.'
+      error: 'Pause threshold must be a number.'
     });
     return;
   }

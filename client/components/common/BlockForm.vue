@@ -141,10 +141,7 @@ export default {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             credentials: 'same-origin', // Sends express-session credentials with request
-            body: JSON.stringify({
-              minutesActive: 0,
-              threshold: 120,
-            }),
+            body: JSON.stringify({threshold: 120}),
           };
 
           const res = await fetch('/api/pause', options);
