@@ -35,7 +35,7 @@ export default {
     url: '', //Url to submit form to
     alerts: {}, // Displays success/error messages encountered during selection change
     callback: null, //Function to run after successful form submission
-    //necessary inputs: choices: [], title: '', stored: '', purpose: ''
+    //necessary inputs: choices: [], title: '', current: '', purpose: ''
     methods: {
         onChange(selection) {
             if (this.purpose === 'groups') {
