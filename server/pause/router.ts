@@ -33,8 +33,8 @@ router.get(
  *
  * @name POST /api/pause
  *
- * @param {string} minutesActive - The number of minutes the user has been active in their current session
- * @param {string} threshold - The number of minutes the user wants to be active in their current session before receiving a paise notification
+ * @param {number} minutesActive - The number of minutes the user has been active in their current session
+ * @param {number} threshold - The number of minutes the user wants to be active in their current session before receiving a paise notification
  * @return {PauseResponse} - The created pause setting
  * @throws {403} - If the user is not logged in
  * @throws {400} - If minutesActive or threshold is empty or not a number

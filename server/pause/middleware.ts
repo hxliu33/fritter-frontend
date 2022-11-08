@@ -16,18 +16,11 @@ import PauseCollection from './collection';
 };
 
 /**
- * Checks if the content of the pause setting in req.body is valid, i.e not a stream of empty
- * spaces and numbers
+ * Checks if the content of the pause setting in req.body is valid, i.e not empty
  */
 const isValidPauseContent = async (req: Request, res: Response, next: NextFunction) => {
-  const {minutesActive, threshold} = req.body as {minutesActive: string, threshold: string};
-  if (!minutesActive.trim() || !threshold.trim()) {
-    res.status(400).json({
-      error: 'Pause minutesActive and threshold must be at least one number long.'
-    });
-    return;
-  }
-  
+  const {minutesActive, threshold} = req.body as {minutesActive: number, threshold: number};
+
   if (isNaN(+minutesActive) || isNaN(+threshold)) {
     res.status(400).json({
       error: 'Pause minutesActive and threshold must be numbers.'
