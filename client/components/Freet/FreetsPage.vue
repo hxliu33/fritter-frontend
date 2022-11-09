@@ -66,9 +66,31 @@ import GetFreetsForm from '@/components/Freet/GetFreetsForm.vue';
 export default {
   name: 'FreetPage',
   components: {FreetComponent, GetFreetsForm, CreateFreetForm},
+  data() {
+    return {
+      timer: null,
+      lastTime: null,
+    }
+  },
+  beforeMount() {
+    this.lastTime = Date.now();
+  },
+
   mounted() {
     this.$refs.getFreetsForm.submit();
-  }
+    this.timer = setInterval(() => {
+        const timeElapsed = this.$store.state.sessionTimeElapsed + Date.now() - this.lastTime;
+        this.$store.commit('setTimeElapsed', timeElapsed);
+        this.lastTime = Date.now();
+    }, 2000); // every 2 seconds
+  },
+
+  beforeDestroy() {
+    const timeElapsed = this.$store.state.sessionTimeElapsed + Date.now() - this.lastTime;
+    this.$store.commit('setTimeElapsed', timeElapsed);
+    clearInterval(this.timer);
+    this.lastTime = null;
+  },
 };
 </script>
 

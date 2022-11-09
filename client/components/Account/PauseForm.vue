@@ -11,7 +11,7 @@ export default {
       url: '/api/pause/threshold',
       method: 'PATCH',
       hasBody: true,
-      // setThreshold: true,
+      setThreshold: true,
       title: 'Update minimum pause threshold (minutes)',
       fields: [
         {id: 'minutes', label: 'Threshold', value: this.$store.state.pauseThreshold},

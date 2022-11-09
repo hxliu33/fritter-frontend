@@ -17,6 +17,7 @@ export default {
       callback: () => {
         this.$store.commit('setFont', {id: 'verdana', value: 'Verdana'}); //reset font
         this.$store.commit('setTimeElapsed', 0); //reset time elapsed
+        this.$store.commit('setPauseThreshold', null); //remove pause threshold
         this.$router.push({name: 'Home'}); // Goes to Home page after signing out
         this.$store.commit('alert', {
           message: 'You are now signed out!', status: 'success'

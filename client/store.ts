@@ -21,7 +21,7 @@ const store = new Vuex.Store({
     username: null, // Username of the logged in user
     alerts: {}, // global success/error messages encountered during submissions to non-visible forms
     font: null, // current font the user is viewing content in
-    sessionTimeElapsed: null, // amount of time passed since the user entered Freets or Groups pages
+    sessionTimeElapsed: 0, // amount of time passed since the user entered Freets or Groups pages
     pauseThreshold: null, // amount of time in minutes before the user gets a pop-up to stop
   },
   mutations: {
@@ -122,7 +122,10 @@ const store = new Vuex.Store({
       return getters.groupAdminUsernames.includes(state.username);
     },
     shouldPause: state => {
-      return state.sessionTimeElapsed >= state.pauseThreshold;
+      if (!state.pauseThreshold) {
+        return false;
+      }
+      return state.sessionTimeElapsed >= state.pauseThreshold * 180000; //pause threshold converted to ms
     }
   },
   // Store data across page refreshes, only discard on browser close

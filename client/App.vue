@@ -7,62 +7,20 @@
         <NavBar />
       </header>
       <router-view />
-      <button id="show-modal" @click="showModal = true">Show Modal</button>
-      <!-- use the modal component, pass in the prop -->
-      <modal v-if="showModal" @close="showModal = false">
-        <!--
-        you can use custom content here to overwrite
-        default content
-        -->
-        <h3 slot="header">custom header</h3>
-      </modal>
-    </div>
-
-    <transition name="modal">
-      <div class="modal-mask">
-        <div class="modal-wrapper">
-          <div class="modal-container">
-
-            <div class="modal-header">
-              <slot name="header">
-                default header
-              </slot>
-            </div>
-
-            <div class="modal-body">
-              <slot name="body">
-                default body
-              </slot>
-            </div>
-
-            <div class="modal-footer">
-              <slot name="footer">
-                default footer
-                <button class="modal-default-button" @click="$emit('close')">
-                  OK
-                </button>
-              </slot>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
+      <PopUp 
+        v-if="$store.getters.shouldPause"
+      />
+    </div> 
   </div>
 </template>
 
 <script>
 import NavBar from '@/components/common/NavBar.vue';
-
-// register modal component
-Vue.component("modal", {template: "#modal-template"});
-
+import PopUp from '@/components/common/PopUp.vue';
 
 export default {
   name: 'App',
-  components: {NavBar},
-  // data( {
-  //   showModal: false,
-  // })
+  components: {NavBar, PopUp},
   beforeCreate() {
     // Sync stored username to current session
     fetch('/api/users/session', {
@@ -94,29 +52,6 @@ body {
 
 main {
   padding: 0 5em 5em;
-}
-
-/*
- * The following styles are auto-applied to elements with
- * transition="modal" when their visibility is toggled
- * by Vue.js.
- *
- * You can easily play with the modal transition by editing
- * these styles.
- */
-
- .modal-enter {
-  opacity: 0;
-}
-
-.modal-leave-active {
-  opacity: 0;
-}
-
-.modal-enter .modal-container,
-.modal-leave-active .modal-container {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
 }
 
 .alerts {

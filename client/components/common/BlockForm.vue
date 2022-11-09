@@ -130,11 +130,11 @@ export default {
           this.$store.commit('refreshFreets');
         }
 
-        // if (this.setThreshold) {
-        //   const text = await r.text();
-        //   const res = text ? JSON.parse(text) : {pause: null};
-        //   this.$store.commit('updatePauseThreshold', res.pause ? res.pause.threshold : null);
-        // }
+        if (this.setThreshold) {
+          const text = await r.text();
+          const res = text ? JSON.parse(text) : {pause: null};
+          this.$store.commit('setPauseThreshold', res.pause ? res.pause.threshold : null);
+        }
 
         if (this.createPause) {
           const options = {

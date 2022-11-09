@@ -20,6 +20,7 @@ export default {
       ],
       title: 'Sign in',
       callback: () => {
+        this.$store.commit('setTimeElapsed', 0);
         this.$router.push({name: 'Home'});
         this.$store.commit('alert', {
           message: 'You are now signed in!', status: 'success'

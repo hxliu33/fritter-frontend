@@ -48,7 +48,6 @@ export default {
     }
   },
   beforeMount() {
-    this.timer = $store.state.sessionTimeElapsed;
     this.lastTime = Date.now();
   },
   //get group info etc in mounted
@@ -56,15 +55,14 @@ export default {
     // this.$refs.getGroupFreetsForm.submit();
     this.timer = setInterval(() => {
         const timeElapsed = this.$store.state.sessionTimeElapsed + Date.now() - this.lastTime;
-        //send PATCH request
-        this.$store.commit('updateTimeElapsed', timeElapsed);
+        this.$store.commit('setTimeElapsed', timeElapsed);
         this.lastTime = Date.now();
-    }, 180000); // every minute
+    }, 2000); // every 2 seconds
   },
 
   beforeDestroy() {
     const timeElapsed = this.$store.state.sessionTimeElapsed + Date.now() - this.lastTime;
-    //send PATCH request
+    this.$store.commit('setTimeElapsed', timeElapsed);
     clearInterval(this.timer);
     this.lastTime = null;
   }
