@@ -9,7 +9,7 @@ export default {
   data() {
     return {
       url: '/api/users',
-      method: 'POST',
+      method: 'PUT',
       hasBody: true,
       setUsername: true,
       createPause: true,

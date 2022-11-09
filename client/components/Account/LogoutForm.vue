@@ -16,6 +16,8 @@ export default {
       content: 'Taking a break? See you later.',
       callback: () => {
         this.$store.commit('setFont', {id: 'verdana', value: 'Verdana'}); //reset font
+        this.$store.commit('updateGroups', []);
+        this.$store.commit('resetGroupInfo');
         this.$store.commit('setTimeElapsed', 0); //reset time elapsed
         this.$store.commit('setPauseThreshold', null); //remove pause threshold
         this.$router.push({name: 'Home'}); // Goes to Home page after signing out

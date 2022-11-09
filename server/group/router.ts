@@ -68,7 +68,7 @@ const router = express.Router();
     groupValidator.isUserMember,
   ],
   async (req: Request, res: Response) => {
-    const group = await GroupCollection.findOneByGroupId(req.params.groupId as string);
+    const group = await GroupCollection.findOneByGroupId(req.params.groupId);
     res.status(200).json(util.constructGroupResponse(group));
   }
 );
@@ -76,26 +76,26 @@ const router = express.Router();
 /**
  * Create a new group.
  *
- * @name POST /api/groups
+ * @name PUT /api/groups
  *
  * @param {string} name - name of group
- * @param {string} isPrivate - The privacy setting of the group
+ * @param {boolean} isPrivate - The privacy setting of the group
  * @return {GroupResponse} - The created group
  * @throws {403} - If the user is not logged in
  * @throws {409} - If name is already taken
  * @throws {412} - If privacy setting is not valid
  *
  */
-router.post(
+router.put(
   '/',
   [
     userValidator.isUserLoggedIn,
     groupValidator.isNameNotAlreadyInUse,
-    groupValidator.isValidPrivacySetting,
+    groupValidator.isNameValid,
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
-    const isPrivate = (req.body.isPrivate == "true") ?? false; //default for empty space is false anonymity setting
+    const isPrivate = (req.body.isPrivate) ? (req.body.isPrivate as boolean) : false; //default for empty space is false anonymity setting
     const group = await GroupCollection.addOne(req.body.name, userId, isPrivate);
 
     res.status(201).json({

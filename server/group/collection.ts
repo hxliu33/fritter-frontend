@@ -27,7 +27,7 @@ class GroupCollection {
       administrators: [creator],
       members: [creator],
       posts: [],
-      isPrivate
+      isPrivate,
     });
     await group.save(); // Saves group to MongoDB
     return group.populate('administrators members posts');

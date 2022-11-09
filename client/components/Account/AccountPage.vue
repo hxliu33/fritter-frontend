@@ -50,8 +50,5 @@ export default {
     FontSwitchForm,
     PauseForm,
   },
-  beforeMounted() {
-    // GET request for list of fonts to pass into FontSwitchForm
-  }
 };
 </script>

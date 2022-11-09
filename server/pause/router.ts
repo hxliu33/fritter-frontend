@@ -31,14 +31,14 @@ router.get(
 /**
  * Create a new pause setting.
  *
- * @name POST /api/pause
+ * @name PUT /api/pause
  *
  * @param {number} threshold - The number of minutes the user wants to be active in their current session before receiving a paise notification
  * @return {PauseResponse} - The created pause setting
  * @throws {403} - If the user is not logged in
  * @throws {400} - If threshold is empty or not a number
  */
-router.post(
+router.put(
   '/',
   [
     userValidator.isUserLoggedIn,

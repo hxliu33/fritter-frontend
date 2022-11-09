@@ -32,6 +32,7 @@
       >
         Login
       </router-link>
+      <div>group name: {{this.$store.state.group.name}}</div>
     </div>
     <section class="alerts">
       <article

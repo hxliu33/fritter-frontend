@@ -7,9 +7,25 @@
         <header>
           <h2>Groups for @{{ $store.state.username }}</h2>
         </header>
+        <GetGroupsForm />
+        <GroupInfoComponent
+          v-if="$store.state.group.id"
+        />
+      </section>
+      <CreateGroupForm />
+      <section class="actions"
+        v-if="$store.state.group.id"
+      >
+        <AddMemberForm />
+        <AddAdminForm
+          v-if="$store.getters.isGroupAdmin"
+        />
+        <ChangePrivacyForm
+          v-if="$store.getters.isGroupAdmin"
+        />
       </section>
       <section
-        v-if="$store.state.getters.isGroupAdmin"
+        v-if="$store.state.group.id"
       >
         <CreateGroupFreetForm />
         <section>
@@ -17,7 +33,7 @@
             <section
             v-if="$store.state.group.freets.length"
             >
-            <GroupFreetComponent
+            <GroupFreetsComponent
                 v-for="freet in $store.state.group.freets"
                 :key="freet.id"
                 :freet="freet"
@@ -35,24 +51,39 @@
   
 
 <script>
+import GetGroupsForm from '@/components/Groups/GetGroupsForm.vue';
+import GroupInfoComponent from '@/components/Groups/GroupInfoComponent.vue';
+import CreateGroupForm from '@/components/Groups/CreateGroupForm.vue';
+import AddMemberForm from '@/components/Groups/AddMemberForm.vue';
+import AddAdminForm from '@/components/Groups/AddAdminForm.vue';
+import ChangePrivacyForm from '@/components/Groups/ChangePrivacyForm.vue';
 import GroupFreetsComponent from '@/components/Groups/GroupFreetsComponent.vue';
 import CreateGroupFreetForm from '@/components/Groups/CreateGroupFreetForm.vue';
 
 export default {
   name: 'GroupsPage',
-  components: {GroupFreetsComponent, CreateGroupFreetForm},
+  components: {
+    GetGroupsForm, 
+    GroupInfoComponent,
+    CreateGroupForm, 
+    AddMemberForm,
+    AddAdminForm,
+    ChangePrivacyForm,
+    GroupFreetsComponent, 
+    CreateGroupFreetForm,
+  },
   data() {
     return {
         timer: null,
         lastTime: null,
     }
   },
-  beforeMount() {
+  async beforeMount() {
     this.lastTime = Date.now();
   },
   //get group info etc in mounted
   mounted() {
-    // this.$refs.getGroupFreetsForm.submit();
+    this.$store.commit('refreshGroups');
     this.timer = setInterval(() => {
         const timeElapsed = this.$store.state.sessionTimeElapsed + Date.now() - this.lastTime;
         this.$store.commit('setTimeElapsed', timeElapsed);
@@ -73,5 +104,10 @@ export default {
 section {
   display: flex;
   flex-direction: column;
+}
+
+section .actions {
+  display: flex;
+  flex-direction: row;
 }
 </style>

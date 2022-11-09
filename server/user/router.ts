@@ -87,7 +87,7 @@ router.delete(
 /**
  * Create a user account.
  *
- * @name POST /api/users
+ * @name PUT /api/users
  *
  * @param {string} username - username of user
  * @param {string} password - user's password
@@ -97,7 +97,7 @@ router.delete(
  * @throws {400} - If password or username is not in correct format
  *
  */
-router.post(
+router.put(
   '/',
   [
     userValidator.isUserLoggedOut,

@@ -35,12 +35,12 @@ router.get(
 /**
  * Create a new font switch setting, with Verdana set as the current font
  *
- * @name POST /api/font
+ * @name PUT /api/font
  *
  * @return {FontSwitchResponse} - The created font switch setting
  * @throws {403} - If the user is not logged in
  */
-router.post(
+router.put(
   '/',
   [
     userValidator.isUserLoggedIn,

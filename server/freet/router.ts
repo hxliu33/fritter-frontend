@@ -5,7 +5,6 @@ import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import * as util from './util';
 import UserCollection from '../user/collection';
-import GroupCollection from '../group/collection';
 
 const router = express.Router();
 
@@ -61,7 +60,7 @@ router.get(
  * @name POST /api/freets
  *
  * @param {string} content - The content of the freet
- * @param {string} isAnon - The anonymity setting of the freet
+ * @param {boolean} isAnon - The anonymity setting of the freet
  * @return {FreetResponse} - The created freet
  * @throws {403} - If the user is not logged in
  * @throws {400} - If the freet content is empty or a stream of empty spaces
@@ -76,7 +75,7 @@ router.post(
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
-    const isAnon = (req.body.isAnon as boolean) ?? false; //default for empty space is false anonymity setting
+    const isAnon = (req.body.isAnon) ? (req.body.isAnon as boolean) : false; //default for empty space is false anonymity setting
     const freet = await FreetCollection.addOne(userId, req.body.content, isAnon);
 
     res.status(201).json({

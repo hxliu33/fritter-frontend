@@ -33,9 +33,13 @@ router.beforeEach((to, from, next) => {
       return;
     }
 
-    if (to.name === 'Groups' && !router.app.$store.state.username) {
-      next({name: 'Login'}); // Go to Login page if user navigates to Groups and are not signed in
-      return;
+    if (to.name === 'Groups'){
+      if (!router.app.$store.state.username) {
+        next({name: 'Login'}); // Go to Login page if user navigates to Groups and are not signed in
+        return;
+      } else {
+        router.app.$store.commit('refreshGroups');
+      }
     }
   }
 

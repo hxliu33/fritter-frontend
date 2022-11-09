@@ -87,6 +87,8 @@ export default {
       createFont: false, // Whether or not the font setting should be created
       getThreshold: false, // Whether or not the pause threshold needs to be fetched
       getFont: false, // Whether or not the font needs to be fetched
+      setGroup: false, // Whether or not the stored group should be set
+      addToGroup: false, // Whether or not to add a post to a group
       alerts: {}, // Displays success/error messages encountered during form submission
       // returnId: false, // Whether or not to return created freet's ID
       callback: null, // Function to run after successful form submission
@@ -136,9 +138,22 @@ export default {
           this.$store.commit('setPauseThreshold', res.pause ? res.pause.threshold : null);
         }
 
+        if (this.setGroup) {
+          const text = JSON.parse(await r.text());
+          const group = {
+            id: text.group._id,
+            name: text.group.name,
+            freets: text.group.posts,
+            members: text.group.members,
+            admin: text.group.administrators,
+            isPrivate: text.group.isPrivate,
+          };
+          this.$store.commit('updateCurrentGroup', group);
+        }
+
         if (this.createPause) {
           const options = {
-            method: 'POST',
+            method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             credentials: 'same-origin', // Sends express-session credentials with request
             body: JSON.stringify({threshold: 120}),
@@ -157,7 +172,7 @@ export default {
 
         if (this.createFont) {
           const options = {
-            method: 'POST',
+            method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             credentials: 'same-origin', // Sends express-session credentials with request
           };
@@ -200,6 +215,26 @@ export default {
           const text = JSON.parse(await res.text());
           const font = {id: text.currentFontId, value: text.currentFontName};
           this.$store.commit('setFont', font);
+        }
+
+        if (this.addToGroup) {
+          const options = {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'same-origin', // Sends express-session credentials with request
+          }
+
+          const text = await r.text();
+          const info = text ? JSON.parse(text) : {freet: null};
+          options.body = info.freet ? info.freet._id : null;
+
+          const res = await fetch(`/api/groups/${$store.state.group.id}/post`, options);
+          if (!res.ok) {
+            const errorRes = await res.json();
+            throw new Error (errorRes.error);
+          }
+
+          this.$store.commit('refreshGroupFreets');
         }
 
         if (this.callback) {

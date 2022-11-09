@@ -10,13 +10,28 @@ import GroupCollection from '../group/collection';
 const isNameNotAlreadyInUse = async (req: Request, res: Response, next: NextFunction) => {
   const group = await GroupCollection.findOneByName(req.body.name);
 
-  if (!group) {
-    next();
+  if (group) {
+    res.status(409).json({
+      error: `Group with name ${req.body.name} already exists.`
+    });
     return;
   }
 
-  res.status(409).json({
-  });
+
+  next();
+};
+
+/**
+ * Checks if a name in req.body is empty
+ */
+ const isNameValid = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.body.name.trim()) {
+    res.status(409).json({
+      error: `No name was provided.`
+    });
+    return;
+  }
+
 
   next();
 };
@@ -32,26 +47,10 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
     return;
   }
 
-  const group = await GroupCollection.findOneByGroupId(req.params.groupId as string);
+  const group = await GroupCollection.findOneByGroupId(req.params.groupId);
   if (!group) {
     res.status(404).json({
       error: `A group with groupId ${req.params.groupId as string} does not exist.`
-    });
-    return;
-  }
-
-  next();
-};
-
-/**
- * Checks if the privacy setting of the group in req.body is valid, i.e empty space or a boolean "true"/"false"
- */
- const isValidPrivacySetting = (req: Request, res: Response, next: NextFunction) => {
-  const {isPrivate} = req.body as {isPrivate: string};
-
-  if (isPrivate !== "true" && isPrivate !== "false" && isPrivate.trim()) {
-    res.status(412).json({
-      error: 'Privacy setting must be a boolean value true or false.'
     });
     return;
   }
@@ -66,7 +65,8 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
   if (req.query.isPrivate === undefined) {
     res.status(400).json({
       error: 'Privacy setting must be present.'
-    })
+    });
+    return;
   }
   
   const {isPrivate} = req.query as {isPrivate: string};
@@ -90,7 +90,7 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
 
   if (!group.members.includes(req.session.userId as Types.ObjectId)) {
     res.status(403).json({
-      error: 'User must be a member of the group.'
+      error: `User must be a member of the group.`
     });
     return;
   }
@@ -278,8 +278,8 @@ const isUserExists = async (req: Request, res: Response, next: NextFunction) => 
 
 export {
   isNameNotAlreadyInUse,
+  isNameValid,
   isGroupExists,
-  isValidPrivacySetting,
   isValidPrivacySettingQuery,
   isUserMember,
   isGivenUserMember,

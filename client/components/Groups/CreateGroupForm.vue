@@ -9,14 +9,14 @@ export default {
   data() {
     return {
       url: '/api/groups',
-      method: 'POST',
+      method: 'PUT',
       hasBody: true,
+      setGroup: true,
       fields: [
         {id: 'name', label: 'Group Name', value: ''},
         {id: 'isPrivate', label: 'Check this box if you would like your group to be private', value: ''}
       ],
       title: 'Create a group', 
-      //set group in store?
       callback: () => {
         const message = 'Successfully created a group!';
         this.$set(this.alerts, message, 'success');
