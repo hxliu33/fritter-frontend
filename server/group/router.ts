@@ -148,7 +148,7 @@ router.put(
   [
     userValidator.isUserLoggedIn,
     groupValidator.isGroupExists,
-    groupValidator.isUserAdmin,
+    // groupValidator.isUserAdmin,
   ],
   async (req: Request, res: Response) => {
     const group = await GroupCollection.findOneByGroupId(req.params.groupId);
@@ -176,7 +176,7 @@ router.patch(
   [
     userValidator.isUserLoggedIn,
     groupValidator.isGroupExists,
-    groupValidator.isUserAdmin,
+    // groupValidator.isUserAdmin,
     groupValidator.isValidPrivacySettingQuery,
   ],
   async (req: Request, res: Response) => {
@@ -213,7 +213,7 @@ router.patch(
     userValidator.isUserLoggedIn,
     groupValidator.isGroupExists,
     groupValidator.isGroupPublic,
-    groupValidator.isUserMemberAlready,
+    // groupValidator.isUserMemberAlready,
   ],
   async (req: Request, res: Response) => {
     const group = await GroupCollection.updateOneMember(req.params.groupId, req.session.userId);
@@ -245,7 +245,7 @@ router.patch(
     groupValidator.isGroupExists,
     groupValidator.isUserExists,
     groupValidator.isGroupJoinable,
-    groupValidator.isGivenUserMemberAlready,
+    // groupValidator.isGivenUserMemberAlready,
   ],
   async (req: Request, res: Response) => {
     const user = await UserCollection.findOneByUsername(req.body.username);
@@ -278,9 +278,9 @@ router.patch(
     userValidator.isUserLoggedIn,
     groupValidator.isGroupExists,
     groupValidator.isUserExists,
-    groupValidator.isUserAdmin,
-    groupValidator.isGivenUserMember,
-    groupValidator.isGivenUserAdminAlready,
+    // groupValidator.isUserAdmin,
+    // groupValidator.isGivenUserMember,
+    // groupValidator.isGivenUserAdminAlready,
   ],
   async (req: Request, res: Response) => {
     const user = await UserCollection.findOneByUsername(req.body.username);
@@ -310,7 +310,7 @@ router.patch(
   [
     userValidator.isUserLoggedIn,
     groupValidator.isGroupExists,
-    groupValidator.isUserMember,
+    // groupValidator.isUserMember,
     groupValidator.isFreetExists,
     groupValidator.isFreetInGroup,
   ],

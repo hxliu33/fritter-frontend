@@ -8,9 +8,8 @@ export default {
   mixins: [BlockForm],
   data() {
     return {
-      url: `/api/groups/${this.store.state.group.id}?isPrivate=${this.fields.value}`,
       method: 'PATCH',
-      hasBody: true,
+      addUrl: true,
       fields: [
         {id: 'isPrivate', label: 'Check this box if you would like your group to be private', value: ''},
       ],

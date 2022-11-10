@@ -8,7 +8,7 @@ export default {
   mixins: [BlockForm],
   data() {
     return {
-      url: `/api/groups/${this.store.state.group.id}/admin`,
+      url: `/api/groups/${this.$store.state.group.id}/admin`,
       method: 'PATCH',
       hasBody: true,
       fields: [

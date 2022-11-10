@@ -90,6 +90,7 @@ export default {
       setGroup: false, // Whether or not the stored group should be set
       addToGroup: false, // Whether or not to add a post to a group
       display: true, // Whether to display the form or not
+      addUrl: false, // Whether we need to change the URL or not
       alerts: {}, // Displays success/error messages encountered during form submission
       // returnId: false, // Whether or not to return created freet's ID
       callback: null, // Function to run after successful form submission
@@ -113,6 +114,10 @@ export default {
             return [id, value];
           })
         ));
+      }
+
+      if(this.addUrl) {
+        this.url = `/api/groups/${this.$store.state.group.id}?isPrivate=${this.fields[0].value ? true : false}`;
       }
 
       try {

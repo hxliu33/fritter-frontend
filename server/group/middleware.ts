@@ -177,7 +177,7 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
   const {groupId} = req.params as {groupId: string};
   const group = await GroupCollection.findOneByGroupId(groupId);
 
-  if (!group.administrators.includes(req.session.userId as Types.ObjectId)) {
+  if (!group.administrators.filter(req.session.userId)) {
     res.status(403).json({
       error: 'User must be an admin of the group.'
     });

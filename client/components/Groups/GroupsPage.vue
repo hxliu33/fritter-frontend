@@ -34,12 +34,8 @@
         v-if="$store.state.group.id"
       >
         <AddMemberForm />
-        <AddAdminForm
-          v-if="$store.state.group.admin"
-        />
-        <ChangePrivacyForm
-          v-if="$store.getters.isGroupAdmin"
-        />
+        <AddAdminForm />
+        <ChangePrivacyForm />
       </section>
       <section
         v-if="$store.state.group.id"
