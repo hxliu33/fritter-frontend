@@ -5,23 +5,24 @@
 <template>
   <nav>
     <div class="left">
-      <img src="../../public/logo.svg">
       <h1 class="title">
         Fritter
       </h1>
     </div>
     <div class="right">
-      <router-link to="/">
+      <router-link class="link" to="/">
         Home
       </router-link>
       <router-link
         v-if="$store.state.username"
+        class="link"
         to="/groups"
       >
         Groups
       </router-link>
       <router-link
         v-if="$store.state.username"
+        class="link"
         to="/account"
       >
         Account
@@ -29,10 +30,10 @@
       <router-link
         v-else
         to="/login"
+        class="link"
       >
         Login
       </router-link>
-      <div>group id: {{this.$store.state.group.id}}</div>
     </div>
     <section class="alerts">
       <article
@@ -49,7 +50,7 @@
 <style scoped>
 nav {
     padding: 1vw 2vw;
-    background-color: #ccc;
+    background-color: indianred;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -59,10 +60,11 @@ nav {
 .title {
     font-size: 32px;
     margin: 0 5px;
+    color: white;
 }
 
-img {
-    height: 32px;
+.link {
+  color: white;
 }
 
 .left {

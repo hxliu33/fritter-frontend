@@ -258,7 +258,7 @@ export default {
 
 <style scoped>
 form {
-  border: 1px solid #111;
+  border: 1px solid indianred;
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
@@ -288,5 +288,24 @@ form h3 {
 textarea {
    font-family: inherit;
    font-size: inherit;
+   border: 1px solid indianred;
+}
+
+input {
+  border: 1px solid indianred;
+  background-color: white;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  border: inherit;
+  background-color: white;
+}
+
+button:hover {
+  background-color: indianred;
+  color: white;
+  transition: 0.5s;
 }
 </style>

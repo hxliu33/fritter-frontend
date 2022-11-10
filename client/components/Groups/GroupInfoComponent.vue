@@ -41,7 +41,7 @@ export default {
 
 <style scoped>
 main {
-    border: 1px solid #111;
+    border: 1px solid indianred;
     padding: 0.5rem;
     display: flex;
     flex-direction: column;

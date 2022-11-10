@@ -68,7 +68,7 @@ main {
 .alerts article {
     border-radius: 5px;
     padding: 10px 20px;
-    color: #fff;
+    color: white;
 }
 
 .alerts p {
@@ -81,6 +81,11 @@ main {
 
 .alerts .success {
     background-color: rgb(45, 135, 87);
+}
+
+.fonts {
+  color:indianred;
+  background-color: white;
 }
 
 .fonts .arial {

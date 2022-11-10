@@ -220,7 +220,7 @@ export default {
 
 <style scoped>
 .freet {
-    border: 1px solid #111;
+    border: 1px solid indianred;
     padding: 20px;
     position: relative;
 }
