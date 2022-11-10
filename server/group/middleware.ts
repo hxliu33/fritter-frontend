@@ -99,20 +99,50 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 /**
- * Checks if the user given by userId in req.body is a member of the group
+ * Checks if the current user is already a member of the group
+ */
+ const isUserMemberAlready = async (req: Request, res: Response, next: NextFunction) => {
+  const {groupId} = req.params as {groupId: string};
+  const group = await GroupCollection.findOneByGroupId(groupId);
+
+  if (group.members.includes(req.session.userId as Types.ObjectId)) {
+    res.status(409).json({
+      error: `User is already a member of the group.`
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Checks if the current user is a member of the group if it's private
+ */
+ const isUserMemberPrivate = async (req: Request, res: Response, next: NextFunction) => {
+  const {groupId} = req.params as {groupId: string};
+  const group = await GroupCollection.findOneByGroupId(groupId);
+
+  if (group.isPrivate) {
+    if (!group.members.includes(req.session.userId as Types.ObjectId)) {
+      res.status(403).json({
+        error: 'User must be a member to see info of a private group.'
+      });
+      return;
+    }
+  }
+
+  next();
+};
+
+/**
+ * Checks if the user given by username in req.body is a member of the group
  */
  const isGivenUserMember = async (req: Request, res: Response, next: NextFunction) => {
   const {groupId} = req.params as {groupId: string};
   const group = await GroupCollection.findOneByGroupId(groupId);
 
-  const validFormat = Types.ObjectId.isValid(req.body.userId);
-  if (!validFormat) {
-    res.status(400).json({
-      error: 'Not valid user ID format.'
-    });
-    return;
-  }
-  if (!group.members.includes(req.body.userId as Types.ObjectId)) {
+  const user = await UserCollection.findOneByUsername(req.body.username);
+  if (!group.members.includes(user._id)) {
     res.status(403).json({
       error: 'User must be a member of the group.'
     });
@@ -123,20 +153,14 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 /**
- * Checks if the user given by userId in req.body is NOT a member of the group
+ * Checks if the user given by username in req.body is NOT a member of the group
  */
- const isGivenUserNotMember = async (req: Request, res: Response, next: NextFunction) => {
+ const isGivenUserMemberAlready = async (req: Request, res: Response, next: NextFunction) => {
   const {groupId} = req.params as {groupId: string};
   const group = await GroupCollection.findOneByGroupId(groupId);
 
-  const validFormat = Types.ObjectId.isValid(req.body.userId);
-  if (!validFormat) {
-    res.status(400).json({
-      error: 'Not valid user ID format.'
-    });
-    return;
-  }
-  if (group.members.includes(req.body.userId as Types.ObjectId)) {
+  const user = await UserCollection.findOneByUsername(req.body.username);
+  if (group.members.includes(user._id)) {
     res.status(409).json({
       error: 'User is already a member of the group.'
     });
@@ -183,20 +207,31 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 /**
- * Checks if the user given by userId in req.body is an admin of the group
+ * Checks if the group is public and therefore able to be joined
+ */
+ const isGroupPublic = async (req: Request, res: Response, next: NextFunction) => {
+  const {groupId} = req.params as {groupId: string};
+  const group = await GroupCollection.findOneByGroupId(groupId);
+
+  if (group.isPrivate) {
+    res.status(403).json({
+      error: 'Group must be public in order for user to be able to add themself.'
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Checks if the user given by username in req.body is an admin of the group
  */
  const isGivenUserAdminAlready = async (req: Request, res: Response, next: NextFunction) => {
   const {groupId} = req.params as {groupId: string};
   const group = await GroupCollection.findOneByGroupId(groupId);
 
-  const validFormat = Types.ObjectId.isValid(req.body.userId);
-  if (!validFormat) {
-    res.status(400).json({
-      error: 'Not valid user ID format.'
-    });
-    return;
-  }
-  if (group.administrators.includes(req.body.userId as Types.ObjectId)) {
+  const user = await UserCollection.findOneByUsername(req.body.username);
+  if (group.administrators.includes(user._id)) {
     res.status(409).json({
       error: 'User is already an admin of the group.'
     });
@@ -207,18 +242,18 @@ const isGroupExists = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 /**
- * Checks if userId given in req.body belongs to an existing user
+ * Checks if username given in req.body belongs to an existing user
  */
 const isUserExists = async (req: Request, res: Response, next: NextFunction) => {
-  const {userId} = req.body as {userId: string};
-  if (!userId) {
-    res.status(400).json({error: `Missing userId.`});
+  const {username} = req.body as {username: string};
+  if (!username) {
+    res.status(400).json({error: `Missing username.`});
     return;
   }
-  const user = await UserCollection.findOneByUserId(req.body.userId as string);
+  const user = await UserCollection.findOneByUsername(req.body.username as string);
   if (!user) {
     res.status(404).json({
-      error: `A user with ID ${req.body.userId as string} does not exist.`
+      error: `A user with username ${req.body.username as string} does not exist.`
     });
     return;
   }
@@ -282,10 +317,13 @@ export {
   isGroupExists,
   isValidPrivacySettingQuery,
   isUserMember,
+  isUserMemberAlready,
+  isUserMemberPrivate,
   isGivenUserMember,
-  isGivenUserNotMember,
+  isGivenUserMemberAlready,
   isUserAdmin,
   isGroupJoinable,
+  isGroupPublic,
   isGivenUserAdminAlready,
   isUserExists,
   isFreetExists,

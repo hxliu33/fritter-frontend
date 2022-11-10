@@ -16,7 +16,7 @@ export default {
       ],
       title: 'Add a group member', 
       callback: () => {
-        this.$store.commit('addGroupMember', fields[0].value);
+        this.$store.commit('refreshCurrentGroup');
         const message = 'Successfully added a group member!';
         this.$set(this.alerts, message, 'success');
         setTimeout(() => this.$delete(this.alerts, message), 3000);

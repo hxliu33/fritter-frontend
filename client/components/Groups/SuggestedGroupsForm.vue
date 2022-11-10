@@ -4,14 +4,15 @@
 import BlockForm from '@/components/common/BlockForm.vue';
 
 export default {
-  name: 'GetGroupsForm',
+  name: 'SuggestedGroupsForm',
   mixins: [BlockForm],
   data() {
     return {
-      url: '/api/groups/member',
+      url: '/api/groups/join',
       method: 'GET',
-      title: 'Get groups',
+      title: 'Get suggested groups',
       fields: [],
+      content: 'Wondering which groups to join?',
       display: false,
     };
   },
@@ -23,7 +24,7 @@ export default {
             if (!r.ok) {
                 throw new Error(res.error);
             }
-            this.$store.commit('updateGroups');
+            this.$store.commit('updateSuggestedGroups', res.groups);
         } catch (e) {
             this.$set(this.alerts, e, 'error');
             setTimeout(() => this.$delete(this.alerts, e), 3000);

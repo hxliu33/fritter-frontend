@@ -16,7 +16,7 @@ export default {
       ],
       title: 'Change the group\'s privacy setting', 
       callback: () => {
-        this.$store.commit('updateGroupPrivacy', fields[0].value);
+        this.$store.commit('refreshCurrentGroup');
         const message = 'Successfully changed the group\'s privacy setting!';
         this.$set(this.alerts, message, 'success');
         setTimeout(() => this.$delete(this.alerts, message), 3000);

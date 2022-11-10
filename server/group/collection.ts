@@ -57,7 +57,7 @@ class GroupCollection {
    * Find all groups a user is a member of.
    *
    * @param {string} userId - The userId of the user to find the groups of
-   * @return {Promise<Array<HydratedDocument<Group>>> | Promise<null>} - The group with the given name, if any
+   * @return {Promise<Array<HydratedDocument<Group>>> | Promise<null>} - The member groups
    */
   static async findAllByMember(userId: Types.ObjectId | string): Promise<Array<HydratedDocument<Group>>> {
     return GroupModel.find({members: userId}).sort({name: -1}).populate('administrators members posts');
@@ -67,10 +67,20 @@ class GroupCollection {
    * Find all groups a user is an admin of.
    *
    * @param {string} userId - The userId of the user to find the groups of
-   * @return {Promise<Array<HydratedDocument<Group>>> | Promise<null>} - The group with the given name, if any
+   * @return {Promise<Array<HydratedDocument<Group>>> | Promise<null>} - The admin groups
    */
   static async findAllByAdmin(userId: Types.ObjectId | string): Promise<Array<HydratedDocument<Group>>> {
     return GroupModel.find({administrators: userId}).sort({name: -1}).populate('administrators members posts');
+  }
+
+  /**
+   * Find all public groups a user is not a member of.
+   *
+   * @param {string} userId - The userId of the user to find the recommendations of
+   * @return {Promise<Array<HydratedDocument<Group>>> | Promise<null>} - The suggested groups
+   */
+   static async findAllSuggested(userId: Types.ObjectId | string): Promise<Array<HydratedDocument<Group>>> {
+    return GroupModel.find({members: {$ne: userId}, isPrivate: false}).sort({name: -1}).populate('administrators members posts');
   }
 
   /**

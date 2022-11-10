@@ -43,7 +43,7 @@ export default {
                 const params = {
                     method: 'GET',
                 }
-                this.url = `/api/groups/${selection.id}`;
+                this.url = `/api/groups/info/${selection.id}`;
                 this.request(params);
             } else if (this.purpose === 'fonts') {
                 // send API request
@@ -74,17 +74,21 @@ export default {
                 }
 
                 if (this.purpose === 'groups') {
-                    const text = JSON.parse(await r.text());
-                    const group = {
-                        id: text.group._id,
-                        name: text.group.name,
-                        freets: text.group.posts,
-                        members: text.group.members,
-                        admin: text.group.administrators,
-                        isPrivate: text.group.isPrivate,
-                    };
-                    console.log(text.group);
-                    this.$store.commit('updateCurrentGroup', group);
+                    const text = await r.text();
+                    const res = text ? JSON.parse(text) : {group: null};
+                    if (!res.group) {
+                        this.$store.commit('resetGroupInfo');
+                    } else {
+                        const group = {
+                        id: res.group._id,
+                        name: res.group.name,
+                        freets: res.group.posts,
+                        members: res.group.members,
+                        admin: res.group.administrators,
+                        isPrivate: res.group.isPrivate,
+                        };
+                        this.$store.commit('updateCurrentGroup', group);
+                    }
                 }
 
                 if (this.callback) {

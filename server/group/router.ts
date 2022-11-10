@@ -25,7 +25,9 @@ const router = express.Router();
   async (req: Request, res: Response) => {
     const allGroups = await GroupCollection.findAllByMember(req.session.userId as string);
     const response = allGroups.map(util.constructGroupResponse);
-    res.status(200).json(response);
+    res.status(200).json({
+      message: 'Here are all the groups you are a member of.',
+      groups: response});
   }
 );
 
@@ -46,14 +48,16 @@ const router = express.Router();
   async (req: Request, res: Response) => {
     const allGroups = await GroupCollection.findAllByAdmin(req.session.userId as string);
     const response = allGroups.map(util.constructGroupResponse);
-    res.status(200).json(response);
+    res.status(200).json({
+      message: 'Here are all the groups you are an admin of.',
+      groups: response});
   }
 );
 
 /**
  * Get information about a group
  *
- * @name GET /api/groups/:groupId
+ * @name GET /api/groups/info/:groupId
  *
  * @return {GroupResponse} - A group with id of groupId
  * @throws {403} - If user is not logged in
@@ -61,15 +65,39 @@ const router = express.Router();
  * @throws {403} - If the user is not a member of the group
  */
  router.get(
-  '/:groupId?',
+  '/info/:groupId?',
   [
     userValidator.isUserLoggedIn,
     groupValidator.isGroupExists,
-    groupValidator.isUserMember,
+    groupValidator.isUserMemberPrivate,
   ],
   async (req: Request, res: Response) => {
     const group = await GroupCollection.findOneByGroupId(req.params.groupId);
-    res.status(200).json(util.constructGroupResponse(group));
+    res.status(200).json({
+      message: `Here is the information for group ${group.name}`, 
+      group: util.constructGroupResponse(group)});
+  }
+);
+
+/**
+ * Get all public groups that the user is not a member of
+ *
+ * @name GET /api/groups/join
+ *
+ * @return {GroupResponse[]} - A list of public groups that the user is not a member of
+ * @throws {403} - If user is not logged in
+ */
+ router.get(
+  '/join',
+  [
+    userValidator.isUserLoggedIn,
+  ],
+  async (req: Request, res: Response) => {
+    const allGroups = await GroupCollection.findAllSuggested(req.session.userId as string);
+    const response = allGroups.map(util.constructGroupResponse);
+    res.status(200).json({
+      message: `Here are all the suggested public groups for user ${req.session.userId} to join`,
+      groups: response});
   }
 );
 
@@ -157,7 +185,7 @@ router.patch(
       const group = await GroupCollection.updateOnePrivacy(req.params.groupId, (privacy == "true"));
       res.status(200).json({
         message: 'Your group privacy setting was updated successfully.',
-        freet: util.constructGroupResponse(group)
+        group: util.constructGroupResponse(group),
       });
     } else {
       res.status(412).json({
@@ -169,6 +197,34 @@ router.patch(
 )
 
 /**
+ * Modify the group to join as a new member
+ *
+ * @name PATCH /api/groups/:groupId/join
+ *
+ * @return {GroupResponse} - The updated group
+ * @throws {404} - If the groupId is not found
+ * @throws {409} - if user is already a member of the group
+ * @throws {403} - if the group is private
+ * @throws {403} - if the current user is not logged in
+ */
+ router.patch(
+  '/:groupId/join',
+  [
+    userValidator.isUserLoggedIn,
+    groupValidator.isGroupExists,
+    groupValidator.isGroupPublic,
+    groupValidator.isUserMemberAlready,
+  ],
+  async (req: Request, res: Response) => {
+    const group = await GroupCollection.updateOneMember(req.params.groupId, req.session.userId);
+    res.status(200).json({
+      message: 'You successfully joined a group.',
+      group: util.constructGroupResponse(group),
+    });
+  }
+);
+
+/**
  * Modify the group to add a new member
  *
  * @name PATCH /api/groups/:groupId/member
@@ -176,9 +232,9 @@ router.patch(
  * @param {string} username - The username of the user to add
  * @return {GroupResponse} - The updated group
  * @throws {404} - If the groupId is not found
- * @throws {404} - if userId does not belong to an account
- * @throws {400} - if userId is not valid
- * @throws {409} - if user given by userId is already a member of the group
+ * @throws {404} - if username does not belong to an account
+ * @throws {400} - if username is not valid
+ * @throws {409} - if user given by username is already a member of the group
  * @throws {403} - if the current user is not an admin of the group and the group is private
  * @throws {403} - if the current user is not logged in
  */
@@ -189,7 +245,7 @@ router.patch(
     groupValidator.isGroupExists,
     groupValidator.isUserExists,
     groupValidator.isGroupJoinable,
-    groupValidator.isGivenUserMember,
+    groupValidator.isGivenUserMemberAlready,
   ],
   async (req: Request, res: Response) => {
     const user = await UserCollection.findOneByUsername(req.body.username);
@@ -209,10 +265,10 @@ router.patch(
  * @param {string} username - The username of the user to add
  * @return {GroupResponse} - The updated group
  * @throws {404} - If the groupId is not found
- * @throws {404} - if userId does not belong to an account
- * @throws {400} - if userId is not valid
- * @throws {403} - if user given by userId is not a member of the group
- * @throws {409} - if user given by userId is already an admin of the group
+ * @throws {404} - if username does not belong to an account
+ * @throws {400} - if username is not valid
+ * @throws {403} - if user given by username is not a member of the group
+ * @throws {409} - if user given by username is already an admin of the group
  * @throws {403} - if the current user is not an admin of the group
  * @throws {403} - if the current user is not logged in
  */

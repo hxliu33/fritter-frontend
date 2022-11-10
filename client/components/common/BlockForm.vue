@@ -2,7 +2,7 @@
 <!-- This is just an example; feel free to define any reusable components you want! -->
 
 <template>
-  <form @submit.prevent="submit">
+  <form @submit.prevent="submit" v-if="this.display">
     <h3>{{ title }}</h3>
     <article
       v-if="fields.length"
@@ -89,6 +89,7 @@ export default {
       getFont: false, // Whether or not the font needs to be fetched
       setGroup: false, // Whether or not the stored group should be set
       addToGroup: false, // Whether or not to add a post to a group
+      display: true, // Whether to display the form or not
       alerts: {}, // Displays success/error messages encountered during form submission
       // returnId: false, // Whether or not to return created freet's ID
       callback: null, // Function to run after successful form submission
@@ -139,16 +140,22 @@ export default {
         }
 
         if (this.setGroup) {
-          const text = JSON.parse(await r.text());
-          const group = {
-            id: text.group._id,
-            name: text.group.name,
-            freets: text.group.posts,
-            members: text.group.members,
-            admin: text.group.administrators,
-            isPrivate: text.group.isPrivate,
-          };
-          this.$store.commit('updateCurrentGroup', group);
+          const text = await r.text();
+          const res = text ? JSON.parse(text) : {group: null};
+          if (!res.group) {
+            this.$store.commit('resetGroupInfo');
+          } else {
+            const group = {
+              id: res.group._id,
+              name: res.group.name,
+              freets: res.group.posts,
+              members: res.group.members,
+              admin: res.group.administrators,
+              isPrivate: res.group.isPrivate,
+            };
+            this.$store.commit('updateCurrentGroup', group);
+            this.$store.commit('refreshGroups');
+          }
         }
 
         if (this.createPause) {
@@ -226,7 +233,7 @@ export default {
 
           const text = await r.text();
           const info = text ? JSON.parse(text) : {freet: null};
-          options.body = info.freet ? info.freet._id : null;
+          options.body = JSON.stringify({freetId: info.freet ? info.freet._id : null});
 
           const res = await fetch(`/api/groups/${$store.state.group.id}/post`, options);
           if (!res.ok) {
