@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="fonts">
     <div
-      :class="$store.state.font.id ? $store.state.font.id : 'verdana'"
+      :class="$store.state.font ? $store.state.font.id : 'verdana'"
     >
       <header>
         <NavBar />
